@@ -10,4 +10,9 @@ public class HomeController {
     public String home() {
         return "Добро пожаловать в Spring Blog";
     }
+
+    @GetMapping("/about")
+    public String about() {
+        return "Это простой Spring blog";
+    }
 }
