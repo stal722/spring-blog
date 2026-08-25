@@ -19,7 +19,10 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	compileOnly("org.projectlombok:lombok:1.18.34")
+	annotationProcessor("org.projectlombok:lombok:1.18.34")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

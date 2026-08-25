@@ -1,4 +1,4 @@
-package io.hexlet.hexlet_spring_blog;
+package io.hexlet.hexlet_spring_blog.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
