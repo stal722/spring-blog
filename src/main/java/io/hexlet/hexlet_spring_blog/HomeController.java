@@ -1,0 +1,13 @@
+package io.hexlet.hexlet_spring_blog;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HomeController {
+
+    @GetMapping("/")
+    public String home() {
+        return "Добро пожаловать в Spring Blog";
+    }
+}
