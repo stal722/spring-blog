@@ -13,10 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/posts")
 public class PostController {
     private List<Post> posts = new ArrayList<>();
 
-    @GetMapping("/posts")
+    @GetMapping("")
     public ResponseEntity<List<Post>> index(@RequestParam(defaultValue = "5") Integer limit) {
 
         var result = posts.stream().limit(limit).toList();
@@ -25,7 +26,7 @@ public class PostController {
 
     }
 
-    @GetMapping("/posts/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Post> showPost(@PathVariable Integer id) {
         var post = posts.stream()
                 .filter(x -> x.getId().equals(id))
@@ -35,7 +36,7 @@ public class PostController {
 
     }
 
-    @PostMapping("/posts")
+    @PostMapping("")
     public ResponseEntity<Post> createPost(@RequestBody Post post) {
         posts.add(post);
         return ResponseEntity
@@ -43,7 +44,7 @@ public class PostController {
                 .body(post);
     }
 
-    @PutMapping("/posts/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Post> updatePost(@RequestBody Post data, @PathVariable Integer id) {
         var post = posts.stream()
                 .filter(x -> x.getId().equals(id))
@@ -58,7 +59,7 @@ public class PostController {
 
     }
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Integer id) {
 
         posts.removeIf(x -> x.getId().equals(id));
