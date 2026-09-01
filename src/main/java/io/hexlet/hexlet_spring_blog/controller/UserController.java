@@ -1,6 +1,8 @@
 package io.hexlet.hexlet_spring_blog.controller;
 
 import io.hexlet.hexlet_spring_blog.User;
+import io.hexlet.hexlet_spring_blog.model.UserEntity;
+import io.hexlet.hexlet_spring_blog.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,33 +10,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
 
-    private List<User> users = new ArrayList<>();
+    private final UserRepository userRepository;
 
-    @GetMapping
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getAllUsers() {
+    public List<UserEntity> getAllUsers() {
 
-        return users;
+        return userRepository.findAll();
 
     }
 
-    @PostMapping
+    @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody User user) {
+    public UserEntity createUser(@RequestBody UserEntity userEntity) {
 
-        users.add(user);
+        userRepository.save(userEntity);
 
-        return user;
+        return userEntity;
 
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
-        users.removeIf(user -> user.getId().equals(id));
+
+        userRepository.deleteById(id);
     }
 
 

@@ -1,72 +1,66 @@
 package io.hexlet.hexlet_spring_blog.controller;
 
 import io.hexlet.hexlet_spring_blog.model.Post;
-import jakarta.websocket.server.PathParam;
+import io.hexlet.hexlet_spring_blog.model.PostEntity;
+import io.hexlet.hexlet_spring_blog.repository.PostRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api")
 public class PostController {
-    private List<Post> posts = new ArrayList<>();
 
-    @GetMapping("")
-    public ResponseEntity<List<Post>> index(@RequestParam(defaultValue = "5") Integer limit) {
+    private final PostRepository postRepository;
 
-        var result = posts.stream().limit(limit).toList();
+    public PostController(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
-        return ResponseEntity.ok(result);
+    @GetMapping("/posts")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostEntity> index() {
+        return postRepository.findAll();
+    }
+
+    @GetMapping("/posts/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public PostEntity showPost(@PathVariable Long id) {
+        var post = postRepository.findById(id).get();
+        return post;
+
 
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Post> showPost(@PathVariable Integer id) {
-        var post = posts.stream()
-                .filter(x -> x.getId().equals(id))
-                .findFirst();
-
-        return ResponseEntity.of(post);
-
+    @PostMapping("/posts")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostEntity createPost(@RequestBody PostEntity postEntity) {
+        postRepository.save(postEntity);
+        return postEntity;
     }
 
-    @PostMapping("")
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        posts.add(post);
-        return ResponseEntity
-                .created(URI.create("/posts/" + post.getId()))
-                .body(post);
-    }
+    @PutMapping("/posts/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public PostEntity updatePost(@RequestBody Post data, @PathVariable Long id) {
+        var post = postRepository.findById(id).get();
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@RequestBody Post data, @PathVariable Integer id) {
-        var post = posts.stream()
-                .filter(x -> x.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        post.setAuthor(data.getAuthor());
+        post.setPublished(data.isPublished());
         post.setContent(data.getContent());
         post.setTitle(data.getTitle());
 
-        return ResponseEntity.ok(post);
+        postRepository.save(post);
+
+        return post;
 
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Integer id) {
+    @DeleteMapping("/posts/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(@PathVariable Long id) {
 
-        posts.removeIf(x -> x.getId().equals(id));
-
-        return ResponseEntity
-                .noContent()
-                .build();
+        postRepository.deleteById(id);
 
     }
 }
