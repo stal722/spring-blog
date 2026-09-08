@@ -5,6 +5,10 @@ import io.hexlet.hexlet_spring_blog.model.Post;
 import io.hexlet.hexlet_spring_blog.model.PostEntity;
 import io.hexlet.hexlet_spring_blog.repository.PostRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,8 +29,9 @@ public class PostController {
 
     @GetMapping("/posts")
     @ResponseStatus(HttpStatus.OK)
-    public List<PostEntity> index() {
-        return postRepository.findAll();
+    public Page<PostEntity> index(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
+        return postRepository.findByPublishedTrue(pageable);
     }
 
     @GetMapping("/posts/{id}")
@@ -54,7 +59,9 @@ public class PostController {
         post.setContent(data.getContent());
         post.setTitle(data.getTitle());
 
-        return postRepository.save(post);
+        postRepository.save(post);
+
+        return post;
 
     }
 
