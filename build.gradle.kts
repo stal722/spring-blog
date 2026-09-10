@@ -25,6 +25,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok:1.18.34")
 	annotationProcessor("org.projectlombok:lombok:1.18.34")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("net.datafaker:datafaker:2.7.0")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

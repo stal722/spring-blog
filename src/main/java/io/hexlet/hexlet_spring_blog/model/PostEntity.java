@@ -20,14 +20,15 @@ public class PostEntity {
     private Long id;
 
     @NotBlank(message = "Заголовок не должен быть пустым")
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 200)
     private String title;
 
     @NotBlank(message = "Контект не должен быть пустым")
-    @Size(min = 3, max = 100)
+    @Size(min = 3, max = 1000)
     private String content;
 
     private boolean published;
+
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
