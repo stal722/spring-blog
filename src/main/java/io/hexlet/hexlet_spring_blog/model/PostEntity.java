@@ -24,7 +24,7 @@ public class PostEntity {
     private String title;
 
     @NotBlank(message = "Контект не должен быть пустым")
-    @Size(min = 3, max = 1000)
+    @Size(min = 3, max = 200)
     private String content;
 
     private boolean published;

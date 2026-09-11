@@ -1,19 +1,16 @@
 package io.hexlet.hexlet_spring_blog.controller;
 
+import io.hexlet.hexlet_spring_blog.component.PostMapper;
+import io.hexlet.hexlet_spring_blog.dto.PostDTO;
 import io.hexlet.hexlet_spring_blog.exception.ResourceNotFoundException;
-import io.hexlet.hexlet_spring_blog.model.Post;
 import io.hexlet.hexlet_spring_blog.model.PostEntity;
 import io.hexlet.hexlet_spring_blog.repository.PostRepository;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,36 +19,42 @@ import java.util.List;
 public class PostController {
 
     private final PostRepository postRepository;
+    private final PostMapper postMapper;
 
-    public PostController(PostRepository postRepository) {
+    public PostController(PostRepository postRepository, PostMapper postMapper) {
         this.postRepository = postRepository;
+        this.postMapper = postMapper;
     }
 
     @GetMapping("/posts")
     @ResponseStatus(HttpStatus.OK)
-    public Page<PostEntity> index(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public List<PostDTO> index(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
-        return postRepository.findByPublishedTrue(pageable);
+
+        return postRepository.findByPublishedTrue(pageable).stream().map(postMapper::toPostDTO).toList();
     }
 
     @GetMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PostEntity showPost(@PathVariable Long id) {
+    public PostDTO showPost(@PathVariable Long id) {
         var post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
 
-        return post;
+        return postMapper.toPostDTO(post);
     }
 
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public PostEntity createPost(@Valid @RequestBody PostEntity postEntity) {
-        return postRepository.save(postEntity);
+    public PostDTO createPost(@Valid @RequestBody PostEntity postEntity) {
+
+        var post = postRepository.save(postEntity);
+
+        return postMapper.toPostDTO(post);
     }
 
     @PutMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PostEntity updatePost(@Valid @RequestBody Post data, @PathVariable Long id) {
+    public PostDTO updatePost(@Valid @RequestBody PostEntity data, @PathVariable Long id) {
         var post = postRepository.findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
 
@@ -61,7 +64,7 @@ public class PostController {
 
         postRepository.save(post);
 
-        return post;
+        return postMapper.toPostDTO(post);
 
     }
 

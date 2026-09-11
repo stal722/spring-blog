@@ -31,7 +31,7 @@ public class ModelGenerator {
 
             var postEntity = new PostEntity();
             postEntity.setTitle(faker.book().title());
-            postEntity.setContent(faker.lorem().paragraph());
+            postEntity.setContent(faker.lorem().characters(3,199));
             postEntity.setPublished(faker.bool().bool());
             postRepository.save(postEntity);
         }

@@ -1,6 +1,8 @@
 package io.hexlet.hexlet_spring_blog.controller;
 
 import io.hexlet.hexlet_spring_blog.User;
+import io.hexlet.hexlet_spring_blog.component.UserMapper;
+import io.hexlet.hexlet_spring_blog.dto.UserDTO;
 import io.hexlet.hexlet_spring_blog.model.UserEntity;
 import io.hexlet.hexlet_spring_blog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,26 +16,35 @@ import java.util.List;
 @RequestMapping("/api")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+
+    private final UserRepository userRepository;
+
+    private final UserMapper userMapper;
+
+    public UserController(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
+
+
 
 
 
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserEntity> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
 
-        return userRepository.findAll();
+        return userRepository.findAll().stream().map(userMapper::toUserDTO).toList();
 
     }
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserEntity createUser(@RequestBody UserEntity userEntity) {
+    public UserDTO createUser(@RequestBody UserEntity userEntity) {
 
-        userRepository.save(userEntity);
+        var user = userRepository.save(userEntity);
 
-        return userEntity;
+        return userMapper.toUserDTO(user);
 
     }
 
