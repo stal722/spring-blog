@@ -38,7 +38,7 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public PostDTO showPost(@PathVariable Long id) {
         var post = postRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found!"));
 
         return postMapper.toPostDTO(post);
     }
