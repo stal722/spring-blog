@@ -1,6 +1,7 @@
 package io.hexlet.hexlet_spring_blog.controller;
 
 import io.hexlet.hexlet_spring_blog.component.PostMapper;
+import io.hexlet.hexlet_spring_blog.dto.PostCreateDTO;
 import io.hexlet.hexlet_spring_blog.dto.PostDTO;
 import io.hexlet.hexlet_spring_blog.exception.ResourceNotFoundException;
 import io.hexlet.hexlet_spring_blog.model.PostEntity;
@@ -45,11 +46,15 @@ public class PostController {
 
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
-    public PostDTO createPost(@Valid @RequestBody PostEntity postEntity) {
+    public PostDTO createPost(@Valid @RequestBody PostCreateDTO postCreateDTO) {
+        var post = new PostEntity();
+        post.setTitle(postCreateDTO.getTitle());
+        post.setContent(postCreateDTO.getContent());
+        post.setPublished(true);
 
-        var post = postRepository.save(postEntity);
+        var savedPost = postRepository.save(post);
 
-        return postMapper.toPostDTO(post);
+        return postMapper.toPostDTO(savedPost);
     }
 
     @PutMapping("/posts/{id}")
