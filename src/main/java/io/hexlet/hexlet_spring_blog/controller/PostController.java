@@ -3,6 +3,7 @@ package io.hexlet.hexlet_spring_blog.controller;
 import io.hexlet.hexlet_spring_blog.component.PostMapper;
 import io.hexlet.hexlet_spring_blog.dto.PostCreateDTO;
 import io.hexlet.hexlet_spring_blog.dto.PostDTO;
+import io.hexlet.hexlet_spring_blog.dto.PostUpdateDTO;
 import io.hexlet.hexlet_spring_blog.exception.ResourceNotFoundException;
 import io.hexlet.hexlet_spring_blog.model.PostEntity;
 import io.hexlet.hexlet_spring_blog.repository.PostRepository;
@@ -59,13 +60,11 @@ public class PostController {
 
     @PutMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public PostDTO updatePost(@Valid @RequestBody PostEntity data, @PathVariable Long id) {
+    public PostDTO updatePost(@Valid @RequestBody PostUpdateDTO data, @PathVariable Long id) {
         var post = postRepository.findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
 
-        post.setPublished(data.isPublished());
-        post.setContent(data.getContent());
-        post.setTitle(data.getTitle());
+        postMapper.toEntity(data, post);
 
         postRepository.save(post);
 

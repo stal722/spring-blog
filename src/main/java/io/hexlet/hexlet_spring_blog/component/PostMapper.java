@@ -1,6 +1,7 @@
 package io.hexlet.hexlet_spring_blog.component;
 
 import io.hexlet.hexlet_spring_blog.dto.PostDTO;
+import io.hexlet.hexlet_spring_blog.dto.PostUpdateDTO;
 import io.hexlet.hexlet_spring_blog.model.PostEntity;
 import org.springframework.stereotype.Component;
 
@@ -17,5 +18,12 @@ public class PostMapper {
         dto.setUpdateAt(postEntity.getUpdateAt());
 
         return dto;
+    }
+
+    public PostEntity toEntity(PostUpdateDTO postUpdateDTO, PostEntity postEntity) {
+        postEntity.setTitle(postUpdateDTO.getTitle());
+        postEntity.setContent(postUpdateDTO.getContent());
+
+        return postEntity;
     }
 }
