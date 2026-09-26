@@ -33,7 +33,7 @@ public class PostController {
     public List<PostDTO> index(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createAt").descending());
 
-        return postRepository.findByPublishedTrue(pageable).stream().map(postMapper::toPostDTO).toList();
+        return postRepository.findByPublishedTrue(pageable).stream().map(postMapper::toDTO).toList();
     }
 
     @GetMapping("/posts/{id}")
@@ -42,20 +42,15 @@ public class PostController {
         var post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found!"));
 
-        return postMapper.toPostDTO(post);
+        return postMapper.toDTO(post);
     }
 
     @PostMapping("/posts")
     @ResponseStatus(HttpStatus.CREATED)
     public PostDTO createPost(@Valid @RequestBody PostCreateDTO postCreateDTO) {
-        var post = new PostEntity();
-        post.setTitle(postCreateDTO.getTitle());
-        post.setContent(postCreateDTO.getContent());
-        post.setPublished(true);
-
+        var post = postMapper.toEntity(postCreateDTO);
         var savedPost = postRepository.save(post);
-
-        return postMapper.toPostDTO(savedPost);
+        return postMapper.toDTO(savedPost);
     }
 
     @PutMapping("/posts/{id}")
@@ -64,11 +59,11 @@ public class PostController {
         var post = postRepository.findById(id)
                         .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
 
-        postMapper.toEntity(data, post);
+        postMapper.updateEntityFromDTO(data, post);
 
         postRepository.save(post);
 
-        return postMapper.toPostDTO(post);
+        return postMapper.toDTO(post);
 
     }
 

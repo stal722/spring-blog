@@ -1,29 +1,15 @@
 package io.hexlet.hexlet_spring_blog.component;
 
+import io.hexlet.hexlet_spring_blog.dto.PostCreateDTO;
 import io.hexlet.hexlet_spring_blog.dto.PostDTO;
 import io.hexlet.hexlet_spring_blog.dto.PostUpdateDTO;
 import io.hexlet.hexlet_spring_blog.model.PostEntity;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
-@Component
-public class PostMapper {
-
-    public PostDTO toPostDTO (PostEntity postEntity) {
-        PostDTO dto = new PostDTO();
-        dto.setId(postEntity.getId());
-        dto.setTitle(postEntity.getTitle());
-        dto.setContent(postEntity.getContent());
-        dto.setPublished(postEntity.isPublished());
-        dto.setCreateAt(postEntity.getCreateAt());
-        dto.setUpdateAt(postEntity.getUpdateAt());
-
-        return dto;
-    }
-
-    public PostEntity toEntity(PostUpdateDTO postUpdateDTO, PostEntity postEntity) {
-        postEntity.setTitle(postUpdateDTO.getTitle());
-        postEntity.setContent(postUpdateDTO.getContent());
-
-        return postEntity;
-    }
+@Mapper(componentModel = "spring")
+public interface PostMapper {
+    PostDTO toDTO(PostEntity postEntity);
+    PostEntity toEntity(PostCreateDTO dto);
+    void updateEntityFromDTO(PostUpdateDTO dto, @MappingTarget PostEntity postEntity);
 }

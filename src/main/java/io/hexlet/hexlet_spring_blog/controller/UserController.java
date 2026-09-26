@@ -1,15 +1,16 @@
 package io.hexlet.hexlet_spring_blog.controller;
 
-import io.hexlet.hexlet_spring_blog.User;
 import io.hexlet.hexlet_spring_blog.component.UserMapper;
+import io.hexlet.hexlet_spring_blog.dto.UserCreateDTO;
 import io.hexlet.hexlet_spring_blog.dto.UserDTO;
+import io.hexlet.hexlet_spring_blog.dto.UserUpdateDTO;
+import io.hexlet.hexlet_spring_blog.exception.ResourceNotFoundException;
 import io.hexlet.hexlet_spring_blog.model.UserEntity;
 import io.hexlet.hexlet_spring_blog.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,24 +28,33 @@ public class UserController {
     }
 
 
-
-
-
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
     public List<UserDTO> getAllUsers() {
 
-        return userRepository.findAll().stream().map(userMapper::toUserDTO).toList();
+        return userRepository.findAll().stream().map(userMapper::toDTO).toList();
 
     }
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser(@RequestBody UserEntity userEntity) {
+    public UserDTO createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        var user = userMapper.toEntity(userCreateDTO);
+        userRepository.save(user);
+        return userMapper.toDTO(user);
+    }
 
-        var user = userRepository.save(userEntity);
+    @PutMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDTO updateUser(@RequestBody UserUpdateDTO dto, @PathVariable long id) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
 
-        return userMapper.toUserDTO(user);
+        userMapper.updateEntityFromDTO(dto, user);
+
+        userRepository.save(user);
+
+        return userMapper.toDTO(user);
 
     }
 
